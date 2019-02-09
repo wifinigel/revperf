@@ -1,0 +1,72 @@
+wlanpi@wlanpi:~/revperf$ sudo ./revperf.py 
+________________________________________________________________________________
+Starting tests with following parameters: 
+
+ duration  = 20 secs 
+ port      = 5201 
+ protocol  = udp 
+ interval  = 5 secs 
+ bandwidth = 10000kbps
+
+Information: Hit Ctrl-C at ay time to stop testing.
+Information: Ensure all remote test devices are running iperf3 in server mode (not iperf2)
+________________________________________________________________________________
+
+
+--------------------------------------------------------------------------------
+Performing ping test to each target iperf server...
+
+ + Test ping to device: S7 (192.168.0.16): ping test passed
+ + Test ping to device: ipad (192.168.0.17): ping test passed
+
+Ping tests complete (servers that fail ping tests may able to run iperf tests).
+--------------------------------------------------------------------------------
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Commencing iperf tests...
+
+ * Connecting to S7 / 192.168.0.16:5201
+ * Connecting to ipad / 192.168.0.17:5201
+
+Please wait while iperf3 tests complete...
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+All tests complete...here are the results:
+
+================================================================================
+Results for ipad / 192.168.0.17   Nigel iPad Mini
+================================================================================
+Connecting to host 192.168.0.17, port 5201
+Reverse mode, remote host 192.168.0.17 is sending
+[  7] local 192.168.0.21 port 44189 connected to 192.168.0.17 port 5201
+[ ID] Interval           Transfer     Bandwidth       Jitter    Lost/Total Datagrams
+[  7]   0.00-5.00   sec  6.02 MBytes  10.1 Mbits/sec  0.540 ms  4/774 (0.52%)  
+[  7]   5.00-10.00  sec  5.96 MBytes  10.0 Mbits/sec  0.711 ms  0/763 (0%)  
+[  7]  10.00-15.00  sec  5.96 MBytes  10.0 Mbits/sec  0.672 ms  0/763 (0%)  
+[  7]  15.00-20.00  sec  5.95 MBytes  9.99 Mbits/sec  0.726 ms  1/763 (0.13%)  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bandwidth       Jitter    Lost/Total Datagrams
+[  7]   0.00-20.00  sec  23.9 MBytes  10.0 Mbits/sec  0.697 ms  5/3064 (0.16%)  
+[  7] Sent 3064 datagrams
+
+iperf Done.
+
+================================================================================
+Results for S7 / 192.168.0.16   Nigel - Samsung S7
+================================================================================
+Connecting to host 192.168.0.16, port 5201
+Reverse mode, remote host 192.168.0.16 is sending
+[  7] local 192.168.0.21 port 47987 connected to 192.168.0.16 port 5201
+[ ID] Interval           Transfer     Bandwidth       Jitter    Lost/Total Datagrams
+[  7]   0.00-5.00   sec  5.98 MBytes  10.0 Mbits/sec  0.509 ms  0/765 (0%)  
+[  7]   5.00-10.00  sec  5.96 MBytes  10.0 Mbits/sec  0.466 ms  0/763 (0%)  
+[  7]  10.00-15.00  sec  5.95 MBytes  9.99 Mbits/sec  0.494 ms  0/762 (0%)  
+[  7]  15.00-20.00  sec  5.96 MBytes  10.0 Mbits/sec  0.509 ms  0/763 (0%)  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bandwidth       Jitter    Lost/Total Datagrams
+[  7]   0.00-20.00  sec  23.9 MBytes  10.0 Mbits/sec  0.509 ms  0/3053 (0%)  
+[  7] Sent 3053 datagrams
+
+iperf Done
