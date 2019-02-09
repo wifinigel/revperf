@@ -1,11 +1,12 @@
 Instructions:
 
-1. SSH to WLANPi (login wlanpi/wlanpi)
-2. Create new directory: mkdir ./iperf3
-3. Change in to directory: cd ./iperf3
-4. Copy files in to directory /home/wlanpi/iperf3
-5. Make python script executable: chmod a+x ./iperf3-test-proc-cmd.py
-6. Edit the devices.csv file with the test devices: nano ./devices.csv
-7. Edit the iperf confog file with chosen iperf settings: nano ./config.ini
-8. Ensure all target devices are running iperf3 server
-9. Launch script with command: ./iperf3-test-proc-cmd.py
+1.  SSH to WLANPi (login wlanpi/wlanpi)
+2.  Create new directory: mkdir ./revperf
+3.  Change in to directory: cd ./revperf
+4.  Copy files in to directory /home/wlanpi/revperf
+5.  Make python script executable: chmod a+x ./revperf.py
+6.  Edit the devices.csv file with the test devices: nano ./devices.csv
+7.  Edit the iperf confog file with chosen iperf settings: nano ./config.ini
+8.  Ensure all target devices are running iperf3 server (not iperf2) using command 'iperf3 -s' 
+9.  Launch script with command: ./revperf.py
+10. Use './revperf -h' to see CLI options available
