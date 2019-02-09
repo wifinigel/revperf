@@ -18,12 +18,53 @@ import os
 import os.path
 import sys
 import json
+import getopt
 
 __author__ = "Nigel Bowden"
-__version__ = "0.01"
+__version__ = "0.02"
 __maintainer__ = "Nigel Bowden"
 __email__ = "wifinigel@gmail.com"
 __status__ = "Alpha"
+
+DEBUG = 0
+PING_TEST = True
+PERF_TEST = True
+
+# we must be root to run this script - exit with msg if not
+if not os.geteuid()==0:
+    print("\n#####################################################################################")
+    print("You must be root to run this script (use 'sudo ./revperf.py') - exiting" )
+    print("#####################################################################################\n")
+    sys.exit()
+
+def usage():
+
+    # put CLI syntax here
+    print('\nUsage: revperf.py -n ')
+    print('       revperf.py -p ')
+    print('       revperf.py -v ')
+    print('       revperf.py -h \n')
+    print('  -h      Help information')
+    print('  -n      No ping checks prior to test start (only do iperf tests)')
+    print('  -p      Ping only tests (do not do iperf tests)')
+    print('  -v      Script verion information')
+    print('\n')
+    print('revperf home page: https://github.com/wifinigel/revperf \n')
+    sys.exit()
+
+def ping_host(host):
+
+    # ICMP ping to host and report pass/fail (True/False)
+    try:
+        ping_output = subprocess.check_output("/bin/ping -c 2 -q " + host, shell=True)
+        return True
+    except Exception as ex:
+        if DEBUG:
+            error_descr = "Ping issue:"
+            print(error_descr)
+            print(ex)
+        
+        return False 
 
 def iperf_client_test(target_server, q, bandwidth=0, duration=10, port=5201, protocol='tcp', interval=5):
 
@@ -61,6 +102,28 @@ def iperf_client_test(target_server, q, bandwidth=0, duration=10, port=5201, pro
 
         
 def main():
+
+    global PING_TEST
+    global PERF_TEST
+
+    # process sthe CLI parameters passed to this script 
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],'nhvp')
+    except getopt.GetoptError:
+        print("\nOops...syntaxt error, please re-check: \n")
+        usage()
+
+    for opt, arg in opts:
+        if opt == '-h':
+            usage()
+        elif opt == ("-v"):
+            print('\n revperf.py')
+            print(' Version: ' + __version__ + '\n')
+            sys.exit()
+        elif opt in ("-n"):
+            PING_TEST = False
+        elif opt in ("-p"):
+            PERF_TEST = False
 
     '''
     1. Read in CSV file with target device details
@@ -113,31 +176,67 @@ def main():
     q = Queue()
 
     # provide status message showing test details
+    print('_' * 80)
     if protocol == 'udp':
-        print("\nStarting tests with duration = {0} secs, port = {1}, protocol = {2}, interval = {3} secs, bandwidth = {4}kbps\n".format(duration, port, protocol,interval, bandwidth))
+        print("Starting tests with following parameters: \n\n duration  = {0} secs \n port      = {1} \n protocol  = {2} \n interval  = {3} secs \n bandwidth = {4}kbps\n".format(duration, port, protocol,interval, bandwidth))
     else:
-        print("\nStarting tests with duration = {0} secs, port = {1}, protocol = {2}, interval = {3} secs\n".format(duration, port, protocol,interval))
+        print("Starting tests following parameters: \n\n duration  = {0} secs \n port      = {1} \n protocol  = {2} \n interval  = {3} secs\n".format(duration, port, protocol,interval))
     
+    print('Information: Hit Ctrl-C at ay time to stop testing.')
+    print('Information: Ensure all remote test devices are running iperf3 in server mode (not iperf2)')
+    print('_' * 80)
+    print('\n')
+    
+    #######################
+    # Ping tests
+    #######################
+    # try pinging the test servers to verify if they are accessible
+    if PING_TEST == True:
+    
+        print('-' * 80)
+        print("Performing ping test to each target iperf server...\n")
+    
+        for target_server in device_dict.keys():
+            
+            if ping_host(target_server):
+                print(" + Test ping to device: {} ({}): ping test passed". format(device_dict[target_server][0], target_server))
+            else:
+                print(" * Test ping to device: {} ({}): ping test failed ***". format(device_dict[target_server][0], target_server))
+                
+        print("\nPing tests complete (servers that fail ping tests may able to run iperf tests).")
+        print('-' * 80)
+        print('\n')
+        
+    if PERF_TEST == False:
+        sys.exit()
+    
+    #######################
+    # Process launches
+    #######################
     # launch one test process per remote device
+    print('+' * 80)
+    print("Commencing iperf tests...\n")
+   
     for target_server in device_dict.keys():
     
         device_name = device_dict[target_server][0]
         
         iperf_proc = Process(target=iperf_client_test, args=(target_server, q, bandwidth, duration, port, protocol, interval))
         
-        print('Connecting to {0} / {1}:{2}'.format(device_name, target_server, port))
+        print(' * Connecting to {0} / {1}:{2}'.format(device_name, target_server, port))
         iperf_proc.start()  
         procs.append(iperf_proc)
     
     # All processes have completed to get to this point
     print('\nPlease wait while iperf3 tests complete...\n')
+    print('+' * 80)
 
     for a_proc in procs:
         #block main process until sub-processes complete
         a_proc.join()
 
     # Provide details of test results
-    print("\nAll processes complete...here are the results:\n")
+    print("\nAll tests complete...here are the results:\n")
     
     # Process the results that have been dumped in to the queue by each process
     while not q.empty():

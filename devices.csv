@@ -1,9 +1,3 @@
 device_ip,device_name,device_description
-192.168.0.26,probe6,"Probe 6 - WLANPi"
-192.168.0.29,probe3,"Probe 3 - WLANPi"
-192.168.0.12,ipad,"Nigel iPad Mini"
-192.168.0.31,probe8,"Probe 8 - WLANPi"
+192.168.0.17,ipad,"Nigel iPad Mini"
 192.168.0.16,S7,"Nigel - Samsung S7"
-192.168.0.30,probe2,"Probe 2 - RPI"
-192.168.0.34,nokia,"Nokia test phone"
-192.168.0.35,samsung_tab,"Samsung tablet"
